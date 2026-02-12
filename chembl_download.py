@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 DB_PATH = Path("../POBRANE/chembl_36/chembl_36_sqlite/chembl_36.db")
-CSV_PATH = Path("Dane/chembl_activity_subset_01.csv")
+CSV_PATH = Path("Dane/chembl_activity_subset_03.csv")
 # PARQUET_PATH = Path(OUT_PATH+".parquet")
 
 CHUNK_SIZE = 100_000
@@ -16,10 +16,12 @@ STANDARD_TYPES = ("IC50", "Ki", "Kd", "EC50")
 QUERY = f"""
 SELECT
     A.activity_id,
-    A.assay_id,
+    A.assay_id as assay_chembl_id,
     A.doc_id,
     A.record_id,
     A.molregno,
+    MD.chembl_id as molecule_chembl_id,
+    TD.chembl_id as target_chembl_id,
     A.standard_relation,
     A.standard_value,
     A.standard_units,
@@ -41,24 +43,39 @@ SELECT
     A.text_value,
     A.standard_text_value,
     ASA.confidence_score,
+    AT.assay_desc as  assay_type_description,
     CS.canonical_smiles,
     CP.mw_freebase,
     CP.alogp,
     CP.hbd,
     CP.hba,
     CP.psa,
-    CP.heavy_atoms
+    CP.heavy_atoms,
+    CP.qed_weighted,
+    CP.num_ro5_violations,
+    MD.max_phase,
+    MD.first_approval,
+    TD.pref_name AS target_name,
+    TD.organism,
+    TD.target_type
 FROM activities A
 JOIN assays ASA
     ON A.assay_id = ASA.assay_id
+JOIN assay_type AT
+    ON ASA.assay_type = AT.assay_type
 JOIN compound_structures CS
     ON CS.molregno = A.molregno
 JOIN compound_properties CP
     ON CP.molregno = A.molregno
+JOIN molecule_dictionary MD
+    ON MD.molregno = A.molregno
+JOIN target_dictionary TD
+    ON ASA.tid = TD.tid
 WHERE
     A.standard_value IS NOT NULL
     AND ASA.confidence_score >= {MIN_CONFIDENCE}
     AND A.standard_type IN {STANDARD_TYPES}
+    AND A.relation = "="
 """
 
 # =========================
@@ -94,3 +111,6 @@ def extract_to_csv():
 
 if __name__ == "__main__":
     extract_to_csv()
+    # conn = sqlite3.connect(DB_PATH)
+    # print(pd.read_sql_query("SELECT COUNT(*) FROM activities", conn))
+    # conn.close()
