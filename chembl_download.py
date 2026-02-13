@@ -2,8 +2,10 @@ import sqlite3
 import pandas as pd
 from pathlib import Path
 
-DB_PATH = Path("../POBRANE/chembl_36/chembl_36_sqlite/chembl_36.db")
-CSV_PATH = Path("Dane/chembl_activity_subset_03.csv")
+BASE_DIR = Path(__file__).resolve().parent
+
+DB_PATH = BASE_DIR / "../POBRANE/chembl_36/chembl_36_sqlite/chembl_36.db"
+CSV_PATH = BASE_DIR / "Dane/chembl_activity_subset_03.csv"
 # PARQUET_PATH = Path(OUT_PATH+".parquet")
 
 CHUNK_SIZE = 100_000
