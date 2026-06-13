@@ -5,12 +5,14 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 DB_PATH = BASE_DIR / "../POBRANE/chembl_36/chembl_36_sqlite/chembl_36.db"
-CSV_PATH = BASE_DIR / "Dane/chembl_activity_subset_03.csv"
+CSV_PATH = BASE_DIR / "Dane/chembl_activity_subset_04.csv"
 # PARQUET_PATH = Path(OUT_PATH+".parquet")
 
 CHUNK_SIZE = 100_000
-MIN_CONFIDENCE = 7
-STANDARD_TYPES = ("IC50", "Ki", "Kd", "EC50")
+MIN_CONFIDENCE = 8
+# STANDARD_TYPES = ("IC50", "Ki", "Kd", "EC50")
+STANDARD_TYPES = "IC50"
+TARGET_TYPE = "SINGLE PROTEIN"
 
 # =========================
 # ZAPYTANIE SQL
@@ -76,8 +78,9 @@ JOIN target_dictionary TD
 WHERE
     A.standard_value IS NOT NULL
     AND ASA.confidence_score >= {MIN_CONFIDENCE}
-    AND A.standard_type IN {STANDARD_TYPES}
+    AND A.standard_type = "{STANDARD_TYPES}"
     AND A.relation = "="
+    AND TD.target_type = "{TARGET_TYPE}"
 """
 
 # =========================

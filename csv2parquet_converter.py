@@ -4,8 +4,8 @@ import pyarrow.parquet as pq
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-CSV_PATH = BASE_DIR / "Dane/chembl_activity_subset_03.csv"
-PARQUET_PATH = BASE_DIR / "Dane/chembl_activity_subset_03.parquet"
+CSV_PATH = BASE_DIR / "Dane/chembl_activity_subset_04.csv"
+PARQUET_PATH = BASE_DIR / "Dane/chembl_activity_subset_04.parquet"
 
 CHUNK_SIZE = 500_000
 
